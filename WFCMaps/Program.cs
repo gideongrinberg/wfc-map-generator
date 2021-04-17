@@ -1,30 +1,25 @@
-﻿//using System;
-//using System.Diagnostics;
-//using CommandLine;
+﻿using System;
+using System.Diagnostics;
 
-//using WFC;
-//using WFC.Utils;
+using WaveFunctionCollapse;
 
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
 
-//class Program
-//{
-//    static void Main(string[] args)
-//    {
+        long seconds = 0;
 
-//        //for (int i = 0; i < 12; i++)
-//        //{
-//        //    int n;
-//        //    if (i <= 4) n = 3;
-//        //    else if (i <= 8) n = 4;
-//        //    else n = 6;
+        for (int i = 0; i < 10; i++)
+        {
+            WFCGenerator wfc = new WFCGenerator(n: 6);
+            wfc.Run();
+            seconds += stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"Ran model for the {i}th time");
+        }
 
-
-//        //    ExportUtility.ToImage($"./output_{i}_{n}x{n}.png", wfc, false);
-//        //}
-
-//        WaveFunctionCollapse wfc = new WaveFunctionCollapse("./input.png", 90, 90);
-//        wfc.CreateModel(3, 4, true);
-//        wfc.RunModel();
-//    }
-
-//}
+        Console.WriteLine(seconds / 10);
+    }
+}
