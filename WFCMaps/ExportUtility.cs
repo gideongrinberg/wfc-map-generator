@@ -44,7 +44,7 @@ namespace WFC.Utils
 
         public static string GenerateFileName(string context)
         {
-            return context + "_" + DateTime.Now.ToFileTimeUtc();
+            return context + "_" + DateTime.Now.ToFileTimeUtc() + ".png";
         }
 
     }

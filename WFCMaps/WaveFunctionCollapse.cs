@@ -32,7 +32,6 @@ namespace WFC
         public readonly Rgba32 OUTDOOR_COLOR = new Rgba32(255, 255, 255, 255);
         public readonly Rgba32 WALL_COLOR = new Rgba32(0, 0, 0, 255);
 
-        private ITileConstraint[] constraints;
         private char[,] image;
 
         public TilePropagator GetPropagator { get => propagator; }
@@ -56,15 +55,14 @@ namespace WFC
             image = ImageUtility.GetProcessedImage;
 
             sample = TopoArray.Create(ImageUtility.GetProcessedImage, true);
-            constraints = Array.Empty<ITileConstraint>();
         }
 
-        public void CreateModel(int N = 3, int rotationalSym = 4, bool reflectionSym = true)
+        public void CreateModel(int N = 4, int rotationalSym = 4, bool reflectionSym = true)
         {
             model = new OverlappingModel(sample.ToTiles(), N, rotationalSym, reflectionSym);
 
             topology = new GridTopology(OUTPUT_WIDTH, OUTPUT_HEIGHT, false);
-            propagator = new TilePropagator(model, topology, constraints: constraints, backtrack: false);
+            propagator = new TilePropagator(model, topology, backtrack: true, constraints: new ITileConstraint[] { new MirrorXConstraint() });
 
             Console.WriteLine($"Successfully created model. NxN is {model.NX}x{model.NY}.");
         }
@@ -130,6 +128,7 @@ namespace WFC
                 );
         }
 
+#nullable enable
         public void ToJson(string filename = "output.json", bool prettyPrint = true, string? mapName = null)
         {
             string json;
@@ -152,6 +151,7 @@ namespace WFC
 
             File.WriteAllText(filename, json);
         }
+#nullable disable
 
         /// <returns>A <see cref="string"/> representation of the <see cref="WaveFunctionCollapse"/>'s output.</returns>
         public override string ToString()
