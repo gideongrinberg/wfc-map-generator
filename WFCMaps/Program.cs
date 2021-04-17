@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 
-using WaveFunctionCollapse;
+using WFC;
 
 public class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
+        WaveFunctionCollapse wfc = new WaveFunctionCollapse();
+        wfc.Run();
 
-        long seconds = 0;
-
-        for (int i = 0; i < 10; i++)
-        {
-            WFCGenerator wfc = new WFCGenerator(n: 6);
-            wfc.Run();
-            seconds += stopwatch.ElapsedMilliseconds;
-            Console.WriteLine($"Ran model for the {i}th time");
-        }
-
-        Console.WriteLine(seconds / 10);
+        wfc.ToImage("./map.png");
+        wfc.ToJson("./map.json", "testMap", true);
     }
 }

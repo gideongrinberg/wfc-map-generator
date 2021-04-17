@@ -3,13 +3,17 @@
 using DeBroglie;
 using DeBroglie.Topo;
 using DeBroglie.Models;
+using DeBroglie.Constraints;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace WaveFunctionCollapse
+using Newtonsoft.Json;
+using System.IO;
+
+namespace WFC
 {
-    public class WFCGenerator
+    public class WaveFunctionCollapse
     {
 
         private Rgba32 INDOOR_COLOR = new Rgba32(178, 178, 178, 255);
@@ -27,7 +31,7 @@ namespace WaveFunctionCollapse
         private int width;
         private int height;
 
-        public WFCGenerator(int n = 3, int width = 90, int height = 90, string inputFilename = "./input.png", string outputFilename = "./output.png", bool overlapping = true)
+        public WaveFunctionCollapse(int n = 3, int width = 90, int height = 90, string inputFilename = "./input.png")
         {
             this.width = width;
             this.height = height;
@@ -37,7 +41,13 @@ namespace WaveFunctionCollapse
             model = new OverlappingModel(sample.ToTiles(), n, 4, true);
 
             GridTopology topology = new GridTopology(width, height, false);
-            propagator = new TilePropagator(model, topology);
+
+            MirrorXConstraint mirrorX = new MirrorXConstraint();
+            ITileConstraint[] constraints = new ITileConstraint[] { mirrorX };
+
+            propagator = new TilePropagator(model, topology, true, constraints: constraints);
+
+
         }
 
         public ITopoArray<char> Run()
@@ -106,6 +116,15 @@ namespace WaveFunctionCollapse
 
             }
             image.SaveAsPng(filename);
+        }
+        public string ToJson(string name = "newMap", bool prettyPrint = true)
+        {
+            return JsonConvert.SerializeObject(new { name = name, width = this.width, height = this.height, map = propagator.ToValueArray<char>().ToArray2d<char>()}, prettyPrint ? Formatting.Indented : Formatting.None);
+        }
+
+        public void ToJson(string filename = "./map.json", string mapName = "map", bool prettyPrint = false)
+        {
+            File.WriteAllText(filename, ToJson(mapName, prettyPrint));
         }
     }
 }
